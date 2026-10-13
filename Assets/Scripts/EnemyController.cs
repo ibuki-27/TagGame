@@ -8,16 +8,35 @@ public class EnemyController : MonoBehaviour
     [Header("çıìGê›íË")]
     [SerializeField] private float detectionRange = 10f;
 
+    [Header("ïﬂälê›íË")]
+    [SerializeField] private float catchRange = 1.5f;
+
     private NavMeshAgent agent;
+
+    private bool isGameOver = false;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player").transform;
+        }
     }
 
     void Update()
     {
+        if (isGameOver) return;
+
         float distance = Vector3.Distance(transform.position, player.position);
+
+        // ïﬂÇ‹Ç¡ÇΩîªíË
+        if (distance <= catchRange)
+        {
+            GameOver();
+            return;
+        }
 
         if (distance <= detectionRange)
         {
@@ -30,5 +49,15 @@ public class EnemyController : MonoBehaviour
             agent.ResetPath();
         }
 
+    }
+
+    private void GameOver()
+    {
+        isGameOver = true;
+
+        agent.ResetPath();
+        agent.isStopped = true;
+
+        GameManager.Instance.GameOver();
     }
 }
